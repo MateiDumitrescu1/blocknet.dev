@@ -27,16 +27,25 @@ jobs:
           npm install
           npm run build --if-present
           npm run test --if-present
-
+          
+      # Check if the dist directory exists
+      - name: Verify dist directory
+        working-directory: ./client
+        run: |
+          if [ ! -d "dist" ]; then
+            echo "Dist directory not found! Please check npm build output."
+            exit 1
+          fi
+          
       - name: Zip artifact for deployment
         working-directory: ./client # Specify client directory
-        run: zip -r ../build.zip build # Zip the 'build' folder only
+        run: zip -r ../dist.zip dist # Zip the 'dist' folder only
 
       - name: Upload artifact for deployment job
         uses: actions/upload-artifact@v4
         with:
           name: node-app
-          path: ./build.zip # Path to zipped 'build' folder
+          path: ./dist.zip # Path to zipped 'build' folder
 
   deploy:
     runs-on: ubuntu-latest
@@ -60,5 +69,5 @@ jobs:
         with:
           app-name: 'blocknet-app'
           slot-name: 'Production'
-          package: ./build # Path to unzipped build folder
+          package: ./dist # Path to unzipped build folder
           publish-profile: ${{ secrets.AZUREAPPSERVICE_PUBLISHPROFILE_0826818A90FA45D2B42B7A7B6225C7C2 }}
