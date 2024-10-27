@@ -22,12 +22,14 @@ jobs:
           node-version: '20.x'
 
       - name: npm install, build, and test
+        working-directory: ./client # Specify client directory
         run: |
           npm install
           npm run build --if-present
           npm run test --if-present
 
       - name: Zip artifact for deployment
+        working-directory: ./client # Specify client directory
         run: zip release.zip ./* -r
 
       - name: Upload artifact for deployment job
@@ -58,5 +60,5 @@ jobs:
         with:
           app-name: 'blocknet-app'
           slot-name: 'Production'
-          package: .
+          package: ./client/build
           publish-profile: ${{ secrets.AZUREAPPSERVICE_PUBLISHPROFILE_0826818A90FA45D2B42B7A7B6225C7C2 }}
